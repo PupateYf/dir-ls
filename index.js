@@ -22,8 +22,9 @@ function dirTraverse(targetPath, options) {
     } else if (typeof options == 'function') {
         var fileCallback = options
     } else {
-        var { dirCallback, fileCallback, errorHandle, readMode } = options
+        var { dirCallback, fileCallback, errorHandle, allDone, readMode } = options
     }
+    let fileQuene = ['rootDir'];
     let ls = function (targetPath) {
         let curentRes = { path: targetPath };
         co(function* () {
@@ -34,11 +35,14 @@ function dirTraverse(targetPath, options) {
                     let filePath = [targetPath, fileName].join(path.sep)
                     ls(filePath)
                 })
+                fileQuene.pop();
+                fileQuene = [...fileQuene, ...files]
                 curentRes.type = IS_DIR;
                 curentRes.data = files;
             } else {
                 //file
                 let content = yield fs.readFileAsync(targetPath, '' || readMode)
+                fileQuene.pop();
                 curentRes.type = IS_FILE;
                 curentRes.data = content;
             }
@@ -51,22 +55,15 @@ function dirTraverse(targetPath, options) {
                     fileCallback && fileCallback(curentRes)
                     break;
             }
+            if(!fileQuene.length){
+                allDone && allDone();
+            }
         }).catch(err => {
             errorHandle ? errorHandle(err) : ''
         })
     }
     ls(targetPath)
 }
-
-dirTraverse(path.resolve('./test/parentsDir'), {
-    readMode: 'utf8',
-    dirCallback(res) {
-        console.log('The fileList is \n', res)
-    },
-    fileCallback(res) {
-        console.log('The file content is \n', res)
-    }
-})
 
 module.exports = dirTraverse;
 
