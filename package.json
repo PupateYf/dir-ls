@@ -1,6 +1,6 @@
 {
-  "name": "dir-traversal",
-  "version": "0.0.1",
+  "name": "dir-ls",
+  "version": "1.0.0",
   "description": "Do the traversal of the source directory structure.",
   "main": "index.js",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PupateYf/dir-traversal.git"
+    "url": "git+https://github.com/PupateYf/dir-ls.git"
   },
   "author": "Yatfung Yueng",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PupateYf/dir-traversal/issues"
+    "url": "https://github.com/PupateYf/dir-ls/issues"
   },
-  "homepage": "https://github.com/PupateYf/dir-traversal#readme",
+  "homepage": "https://github.com/PupateYf/dir-ls#readme",
   "engines": {
     "node": ">=v0.11.1"
   },
