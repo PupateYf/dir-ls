@@ -10,10 +10,7 @@ describe('#dir-traversal', function () {
             errorHandle: function(err){
                 done(err)
             },
-            dirCallback: function(){
-                done()
-            },
-            fileCallback: function(){
+            allDone: function(){
                 done()
             }
         })
