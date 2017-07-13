@@ -8,7 +8,7 @@ $ npm install dir-ls --save
 ## Usage
 with options mode:
 ```js
-let ls = require('dir')
+let ls = require('dir-ls')
 
 ls('./someDir', {
     readMode: 'utf8',
