@@ -22,7 +22,7 @@ function dirTraverse(targetPath, options) {
     } else if (typeof options == 'function') {
         var fileCallback = options
     } else {
-        var { dirCallback, fileCallback, errorHandle, allDone, readMode } = options
+        var { dirCallback, fileCallback, errorHandle, allDone, readMode, justFind } = options
     }
     let fileQuene = ['rootDir'];
     let ls = function (targetPath) {
@@ -31,6 +31,10 @@ function dirTraverse(targetPath, options) {
             let tarStatus = yield fs.statAsync(targetPath)
             if (tarStatus.isDirectory()) {
                 let files = yield fs.readdirAsync(targetPath)
+                files = files.filter(fileName => {
+                    let extName = fileName.split('.').pop();
+                    return extName.match(justFind)
+                })
                 files.map(fileName => {
                     let filePath = [targetPath, fileName].join(path.sep)
                     ls(filePath)
@@ -40,7 +44,6 @@ function dirTraverse(targetPath, options) {
                 curentRes.type = IS_DIR;
                 curentRes.data = files;
             } else {
-                //file
                 let content = yield fs.readFileAsync(targetPath, '' || readMode)
                 fileQuene.pop();
                 curentRes.type = IS_FILE;
@@ -55,7 +58,7 @@ function dirTraverse(targetPath, options) {
                     fileCallback && fileCallback(curentRes)
                     break;
             }
-            if(!fileQuene.length){
+            if (!fileQuene.length) {
                 allDone && allDone();
             }
         }).catch(err => {

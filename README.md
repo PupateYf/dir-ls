@@ -51,6 +51,7 @@ Do the traversal of the source directory structure, the `path` is the target dir
 #### object: options
 The `options` could be an object which configures the methods detailedly.
 - `options.readMode {string} ` If no readMode is specified, then the raw buffer is returned.
+- `options.justFind {RegExp|string}` This options will filter other file formats and return the files that you want.
 - `options.dirCallback {function} `This function will be called after an directory have been traversed.
 - `options.fileCallback {function} `This function will be called after a file have been traversed.
 - `options.allDone {function} `This function will be called after the whole directory have been traversed.
