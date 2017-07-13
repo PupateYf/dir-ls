@@ -32,8 +32,11 @@ function dirTraverse(targetPath, options) {
             if (tarStatus.isDirectory()) {
                 let files = yield fs.readdirAsync(targetPath)
                 files = files.filter(fileName => {
-                    let extName = fileName.split('.').pop();
-                    return extName.match(justFind)
+                    let extNameArr = fileName.split('.')
+                    if(extNameArr.length == 1){
+                        return true
+                    }
+                    return extNameArr.pop().match(justFind)
                 })
                 files.map(fileName => {
                     let filePath = [targetPath, fileName].join(path.sep)
