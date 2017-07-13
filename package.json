@@ -1,6 +1,6 @@
 {
   "name": "dir-ls",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Do the traversal of the source directory structure.",
   "main": "index.js",
   "scripts": {
