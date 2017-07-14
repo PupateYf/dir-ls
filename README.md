@@ -12,6 +12,7 @@ let ls = require('dir-ls')
 
 ls('./someDir', {
     readMode: 'utf8',
+    justFind: /png|jpg|gif/,
     dirCallback(res) {
         //do something here
     },
