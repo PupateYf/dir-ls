@@ -40,7 +40,31 @@ test('dir-ls should only traverse txt file', () => {
             : done(error)
         }
     })
-
     expect(done).toHaveBeenCalledTimes(0)
+})
 
+test('dir-ls should only traverse someFile3 file', () => {
+    const findNameRegExp = '3'
+    const testPath = path.resolve('./test/parentsDir')
+    let fileList = []
+
+    const done = jest.fn()
+    
+    ls(testPath, {
+        justFindWithName: findNameRegExp,
+        errorHandle: function(err){
+            done(err)
+        },
+        fileCallback: function(res){
+            fileList.push(res.path)
+        },
+        allDone: function(){
+            let error = new Error();
+            fileList = fileList.filter(filePath => filePath.match(justFindWithName))
+            fileList.length
+            ? done()
+            : done(error)
+        }
+    })
+    expect(done).toHaveBeenCalledTimes(0)
 })
