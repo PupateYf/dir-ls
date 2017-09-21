@@ -22,22 +22,40 @@ function dirTraverse(targetPath, options) {
     } else if (typeof options == 'function') {
         var fileCallback = options
     } else {
-        var { dirCallback, fileCallback, errorHandle, allDone, readMode, justFind } = options
+        var { dirCallback, fileCallback, errorHandle, allDone, readMode, justFindWithName, justFind } = options
     }
+
     let fileQuene = ['rootDir'];
+
+    let shouldMatchExt = !!justFind
+
+    let shouldMatchFileName = !!justFindWithName
+
     let ls = function (targetPath) {
         let curentRes = { path: targetPath };
         co(function* () {
             let tarStatus = yield fs.statAsync(targetPath)
             if (tarStatus.isDirectory()) {
                 let files = yield fs.readdirAsync(targetPath)
-                files = files.filter(fileName => {
-                    let extNameArr = fileName.split('.')
-                    if(extNameArr.length == 1){
+                files = files
+                    .filter(fileName => {
+                        let fileNameArr = fileName.split('.')
+                        if (shouldMatchExt) {
+                            if (fileNameArr.length > 1) {
+                                return fileNameArr[1].match(justFind)
+                            } else {
+                                return false
+                            }
+                        }
                         return true
-                    }
-                    return extNameArr.pop().match(justFind)
-                })
+                    })
+                    .filter(fileName => {
+                        let fileNameArr = fileName.split('.')
+                        if (shouldMatchFileName) {
+                            return fileNameArr[0].match(justFind)
+                        }
+                        return true
+                    })
                 files.map(fileName => {
                     let filePath = [targetPath, fileName].join(path.sep)
                     ls(filePath)
