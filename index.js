@@ -27,22 +27,41 @@ function dirTraverse(targetPath, options) {
 
     let fileQuene = ['rootDir'];
 
-    let shouldMatchExt = !!justFind
+    let shouldMatchExt = justFind
 
-    let shouldMatchFileName = !!justFindWithName
+    let shouldMatchFileName = justFindWithName
 
     let ls = function (targetPath) {
-        let curentRes = { path: targetPath };
+
+        let curentRes = { path: targetPath }
+
         co(function* () {
+
             let tarStatus = yield fs.statAsync(targetPath)
+
             if (tarStatus.isDirectory()) {
                 let files = yield fs.readdirAsync(targetPath)
-                files = files
+
+                files.map(fileName => {
+                    let filePath = [targetPath, fileName].join(path.sep)
+                    ls(filePath)
+                })
+
+                fileQuene.pop();
+                fileQuene = [...fileQuene, ...files]
+                curentRes.type = IS_DIR
+                curentRes.data = files
+
+            } else {
+
+                let fileNameArr = [targetPath.split(path.sep).pop()]
+
+                fileNameArr = fileNameArr
                     .filter(fileName => {
-                        let fileNameArr = fileName.split('.')
+                        let temp = fileName.split('.')
                         if (shouldMatchExt) {
-                            if (fileNameArr.length > 1) {
-                                return fileNameArr[1].match(justFind)
+                            if (temp.length > 1) {
+                                return temp[1].match(justFind)
                             } else {
                                 return false
                             }
@@ -50,27 +69,23 @@ function dirTraverse(targetPath, options) {
                         return true
                     })
                     .filter(fileName => {
-                        let fileNameArr = fileName.split('.')
+                        let temp = fileName.split('.')
                         if (shouldMatchFileName) {
-                            return fileNameArr[0].match(justFind)
+                            return temp[0].match(justFindWithName)
                         }
                         return true
                     })
-                files.map(fileName => {
-                    let filePath = [targetPath, fileName].join(path.sep)
-                    ls(filePath)
-                })
+
+                if (fileNameArr.length != 0) {
+                    let content = yield fs.readFileAsync(targetPath, '' || readMode)
+                    curentRes.type = IS_FILE
+                    curentRes.data = content
+                }
+
                 fileQuene.pop();
-                fileQuene = [...fileQuene, ...files]
-                curentRes.type = IS_DIR;
-                curentRes.data = files;
-            } else {
-                let content = yield fs.readFileAsync(targetPath, '' || readMode)
-                fileQuene.pop();
-                curentRes.type = IS_FILE;
-                curentRes.data = content;
             }
         }).then(res => {
+
             switch (curentRes.type) {
                 case IS_DIR:
                     dirCallback && dirCallback(curentRes)
@@ -79,11 +94,15 @@ function dirTraverse(targetPath, options) {
                     fileCallback && fileCallback(curentRes)
                     break;
             }
+
             if (!fileQuene.length) {
                 allDone && allDone();
             }
+
         }).catch(err => {
+
             errorHandle ? errorHandle(err) : ''
+
         })
     }
     ls(targetPath)
